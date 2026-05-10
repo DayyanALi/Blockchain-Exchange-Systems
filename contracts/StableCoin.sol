@@ -141,7 +141,7 @@ contract StableCoin is IERC20 {
     }
 
     /**
-     * @dev Burn tokens from senderâ€™s balance.
+     * @dev Burn tokens from senders balance.
      * Reduces total supply permanently.
      */
     function burn(uint256 amount) external {
@@ -155,3 +155,4 @@ contract StableCoin is IERC20 {
         emit Transfer(msg.sender, address(0), amount);
     }
 }
+

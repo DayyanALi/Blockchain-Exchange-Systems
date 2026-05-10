@@ -5,7 +5,7 @@
  * @title Deployment Script - CurrencyExchange System
  * @notice This script deploys the core contracts for the stablecoin exchange system.
  * 
- * The order of operations is critical: deploy tokens â†’ deploy exchange â†’ register oracle â†’ add liquidity.
+ * The order of operations is critical: deploy tokens  deploy exchange  register oracle  add liquidity.
  */
 
 const { ethers } = require("hardhat");
@@ -16,7 +16,7 @@ async function main() {
   // 1. Setup
   // ==========================================================
   const [deployer] = await ethers.getSigners();
-  console.log("ðŸ‘¤ Deployer Address:", deployer.address);
+  console.log(" Deployer Address:", deployer.address);
 
   // ==========================================================
   // 2. Deploy StableCoin (LUMSCoin)
@@ -25,14 +25,14 @@ async function main() {
   // - Deploy the contract with an initial supply (e.g., 1,000,000 tokens)
   // - Wait for deployment and print its address
   // Example: "StableCoin deployed at: 0x1234..."
-  console.log("\nðŸ“ Deploying StableCoin (LUMSCoin)...");
+  console.log("\n Deploying StableCoin (LUMSCoin)...");
   
   const StableCoin = await ethers.getContractFactory("StableCoin");
   const initialSupply = ethers.utils.parseEther("1000000"); // 1,000,000 tokens
   const stableCoin = await StableCoin.deploy(ethers.utils.parseEther("1000000"));
   await stableCoin.deployed();
   
-  console.log("âœ… StableCoin deployed at:", stableCoin.address);
+  console.log(" StableCoin deployed at:", stableCoin.address);
 
   // ==========================================================
   // 3. Deploy MockETH
@@ -40,13 +40,13 @@ async function main() {
   // - Deploy a mock ERC20 token named "Mock ETH" with symbol "ETH"
   // - Use the same initial supply value as the stablecoin
   // - Wait for deployment and print address
-  console.log("\nðŸ“ Deploying MockETH...");
+  console.log("\n Deploying MockETH...");
   
   const MockERC20 = await ethers.getContractFactory("MockERC20");
   const mockETH = await MockERC20.deploy("Mock ETH", "ETH", ethers.utils.parseEther("1000000"));
   await mockETH.deployed();
   
-  console.log("âœ… MockETH deployed at:", mockETH.address);
+  console.log(" MockETH deployed at:", mockETH.address);
 
   // ==========================================================
   // 4. Deploy CurrencyExchange
@@ -54,13 +54,13 @@ async function main() {
   // - Get the contract factory for CurrencyExchange
   // - Deploy the contract, passing in the address of your stablecoin
   // - Wait for deployment and log its address
-  console.log("\nðŸ“ Deploying CurrencyExchange...");
+  console.log("\n Deploying CurrencyExchange...");
   
   const CurrencyExchange = await ethers.getContractFactory("CurrencyExchange");
   const exchange = await CurrencyExchange.deploy(stableCoin.address);
   await exchange.deployed();
   
-  console.log("âœ… CurrencyExchange deployed at:", exchange.address);
+  console.log(" CurrencyExchange deployed at:", exchange.address);
 
   // ==========================================================
   // 5. Register ETH with Chainlink Oracle
@@ -69,14 +69,14 @@ async function main() {
   //   (Address: 0x694AA1769357215DE4FAC081bf1f309aDC325306)
   // - Call `addCurrency("ETH", mockETH.address, ORACLE_ADDRESS)`
   // - Wait for confirmation and print message
-  console.log("\nðŸ“ Registering ETH with Chainlink Oracle...");
+  console.log("\n Registering ETH with Chainlink Oracle...");
   
   const ORACLE_ADDRESS = "0x694AA1769357215DE4FAC081bf1f309aDC325306"; // Chainlink ETH/USD on Sepolia
   
   const addCurrencyTx = await exchange.addCurrency("ETH", mockETH.address, ORACLE_ADDRESS);
   await addCurrencyTx.wait();
   
-  console.log("âœ… Registered ETH with oracle:", ORACLE_ADDRESS);
+  console.log(" Registered ETH with oracle:", ORACLE_ADDRESS);
 
   // ==========================================================
   // 6. Mint Additional Tokens for Deployer
@@ -84,58 +84,58 @@ async function main() {
   // - Mint extra tokens for the deployer for testing & liquidity
   // - Mint both stablecoin (LMC) and MockETH (e.g., 1,000,000 each)
   // - Wait for transactions and print balances
-  console.log("\nðŸ“ Minting additional tokens for deployer...");
+  console.log("\n Minting additional tokens for deployer...");
   
   const mintAmount = ethers.utils.parseEther("1000000"); // 1,000,000 tokens
   
   // Mint StableCoin
   const mintStableTx = await stableCoin.mint(deployer.address, mintAmount);
   await mintStableTx.wait();
-  console.log("âœ… Minted StableCoin:", ethers.utils.formatEther(mintAmount));
+  console.log(" Minted StableCoin:", ethers.utils.formatEther(mintAmount));
   
   // Mint MockETH
   const mintETHTx = await mockETH.mint(deployer.address, mintAmount);
   await mintETHTx.wait();
-  console.log("âœ… Minted MockETH:", ethers.utils.formatEther(mintAmount));
+  console.log(" Minted MockETH:", ethers.utils.formatEther(mintAmount));
 
   // ==========================================================
   // 7. Approve and Add Liquidity
   // ==========================================================
-  // - Approve the exchange contract to spend tokens on deployerâ€™s behalf
+  // - Approve the exchange contract to spend tokens on deployers behalf
   // - Add liquidity for both StableCoin and MockETH
   // - Suggested liquidity amount: 500,000 each
   // - Wait for transactions and confirm successful addition
-  console.log("\nðŸ“ Approving and adding liquidity...");
+  console.log("\n Approving and adding liquidity...");
   
   const liquidityAmount = ethers.utils.parseEther("500000"); // 500,000 tokens
   
   // Approve StableCoin
   const approveStableTx = await stableCoin.approve(exchange.address, liquidityAmount);
   await approveStableTx.wait();
-  console.log("âœ… Approved StableCoin for exchange");
+  console.log(" Approved StableCoin for exchange");
   
   // Approve MockETH
   const approveETHTx = await mockETH.approve(exchange.address, liquidityAmount);
   await approveETHTx.wait();
-  console.log("âœ… Approved MockETH for exchange");
+  console.log(" Approved MockETH for exchange");
   
   // Add StableCoin liquidity
   const addStableLiquidityTx = await exchange.addLiquidityStable(liquidityAmount);
   await addStableLiquidityTx.wait();
-  console.log("âœ… Added StableCoin liquidity:", ethers.utils.formatEther(liquidityAmount));
+  console.log(" Added StableCoin liquidity:", ethers.utils.formatEther(liquidityAmount));
   
   // Add MockETH liquidity
   const addETHLiquidityTx = await exchange.addLiquidity("ETH", liquidityAmount);
   await addETHLiquidityTx.wait();
-  console.log("âœ… Added MockETH liquidity:", ethers.utils.formatEther(liquidityAmount));
+  console.log(" Added MockETH liquidity:", ethers.utils.formatEther(liquidityAmount));
 
 
   // ==========================================================
   // 8. Print Final Balances
   // ==========================================================
-  // - Fetch and log the exchange contractâ€™s StableCoin and ETH balances
+  // - Fetch and log the exchange contracts StableCoin and ETH balances
   // - Verify they match the added liquidity amounts
-  console.log("\nðŸ“Š Final Exchange Balances:");
+  console.log("\n Final Exchange Balances:");
   
   const exchangeStableBalance = await exchange.stableBalance();
   const exchangeETHBalance = await exchange.balanceOf("ETH");
@@ -143,18 +143,19 @@ async function main() {
   console.log("Exchange Stable:", ethers.utils.formatEther(exchangeStableBalance));
   console.log("Exchange ETH:", ethers.utils.formatEther(exchangeETHBalance));
 
-  console.log("\nâœ… Deployment Completed Successfully!");
-  console.log("\nðŸ“‹ Contract Addresses Summary:");
+  console.log("\n Deployment Completed Successfully!");
+  console.log("\n Contract Addresses Summary:");
   console.log("===================================");
   console.log("StableCoin:", stableCoin.address);
   console.log("MockETH:", mockETH.address);
   console.log("CurrencyExchange:", exchange.address);
   console.log("Oracle (ETH/USD):", ORACLE_ADDRESS);
   console.log("===================================");
-  console.log("âœ… Deployment Completed Successfully!");
+  console.log(" Deployment Completed Successfully!");
 }
 
 main().catch((error) => {
-  console.error("âŒ Deployment Failed:", error);
+  console.error(" Deployment Failed:", error);
   process.exitCode = 1;
 });
+

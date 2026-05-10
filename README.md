@@ -90,11 +90,14 @@ npx hardhat run scripts/deployExchange.js --network localhost
 
 ## Sepolia Deployment
 
-Create a `.env` file with your RPC URL and deployer private key:
+Copy `.env.example` to `.env` and fill in your RPC URL, deployer private key, and deployed contract addresses:
 
 ```text
 SEPOLIA_RPC_URL=your_sepolia_rpc_url
 PRIVATE_KEY=your_wallet_private_key
+STABLE_ADDR=deployed_stablecoin_address
+MOCKETH_ADDR=deployed_mocketh_address
+EXCHANGE_ADDR=deployed_exchange_address
 ```
 
 Deploy to Sepolia:
@@ -122,3 +125,4 @@ This repository is intended as a smart contract engineering project and should n
 - oracle-based pricing
 - Sepolia testnet deployment
 - transaction execution and event-driven debugging
+
